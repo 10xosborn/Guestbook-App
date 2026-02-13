@@ -1,86 +1,63 @@
+import express from 'express'
 
+import fs from 'fs';
+import path from 'path';
 
-const http = require('http');
-let messages = [];
+const filePath = './guestbook.json';
 
-const server = http.createServer((req, res) => {
-    console.log(`Request: ${req.method} ${req.url}`);
+const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-    if (req.url === '/' && req.method === 'GET') {
-        let messagesHTML = '';
-        if (messages.length > 0) {
-            messagesHTML = messages.map(msg => `
-                <div style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">
-                    <strong>${msg.name}</strong> 
-                    <small>(${msg.date})</small>
-                    <p>${msg.message}</p>
-                </div>
-            `).join('');
-        } else {
-            messagesHTML = '<p>No messages yet. Be the first!</p>';
+// app.use('/', guestbookRoutes);
+
+app.set('view engine', 'ejs')
+
+let entries = [];
+
+function readEntries() {
+    try {
+        if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync(filePath, 'utf8');
+            return JSON.parse(data);
         }
-        
-        const html = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Guestbook</title>
-            <style>
-                body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-                form { background: #f0f0f0; padding: 20px; border-radius: 5px; }
-                input, textarea { width: 100%; padding: 8px; margin: 5px 0; }
-                button { background: blue; color: white; padding: 10px 20px; border: none; }
-                .message { border: 1px solid #ddd; padding: 15px; margin: 10px 0; }
-            </style>
-        </head>
-        <body>
-            <h1>Guestbook</h1>
-            
-            <form action="/add-message" method="POST">
-                <h3>Leave a Message:</h3>
-                <input type="text" name="name" placeholder="Your Name">
-                <textarea name="message" placeholder="Your Message" rows="4"></textarea>
-                <button type="submit">Submit Message</button>
-            </form>
-            
-            <h2>Messages (${messages.length}):</h2>
-            ${messagesHTML}
-        </body>
-        </html>`;
-        
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(html);
-        
-    } else if (req.url === '/add-message' && req.method === 'POST') {
-        let body = '';
-        
-        req.on('data', chunk => {
-            body += chunk.toString();
-        });
-        req.on('end', () => {
-            console.log('Form data received:', body);
-            const params = new URLSearchParams(body);
-            const name = params.get('name') || 'Anonymous';
-            const message = params.get('message');
-            
-            console.log(`Message from ${name}: ${message}`);
-            messages.unshift({
-                name: name,
-                message: message,
-                date: new Date().toLocaleString()
-            });
-            
-            console.log(`Total messages: ${messages.length}`);
-            res.writeHead(302, { 'Location': '/' });
-            res.end();
-        });
-    } else {
-        res.writeHead(404, { 'Content-Type': 'text/html' });
-        res.end('<h1>404 - Page Not Found</h1>');
+        return [];
+    } catch (err) {
+        console.error('Error reading file:', err);
+        return [];
     }
+}
+
+// Load entries when server starts
+entries = readEntries();
+// Render the page with data
+app.get('/', (req, res) => {
+    console.log('yammmmmmm')
+    res.render('form', { entries: entries });
 });
 
-const PORT = 8080;
-server.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}/`);
+app.post('/', (req, res) => {
+    entries.push(req.body);
+    writeEntries(entries); 
+    res.redirect('/guestbook');
+}); // Redirects back to GET route
+
+
+app.get('/guestbook', (req, res) => {
+    res.render('guestbook',{entries})
+
 });
+
+
+function writeEntries(entries) {
+    try {
+        fs.writeFileSync(filePath, JSON.stringify(entries, null, 2), 'utf8');
+    } catch (err) {
+        console.error('Error writing file:', err);
+    }
+}
+
+const PORT = 3000;
+app.listen( PORT,() => console.log('sheeeppppp'));
+
+// import guestbookRoutes from './routes/guestbookRoutes.js';
