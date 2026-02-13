@@ -5,10 +5,8 @@ let messages = [];
 
 const server = http.createServer((req, res) => {
     console.log(`Request: ${req.method} ${req.url}`);
-    
-    // Handle different URLs
+
     if (req.url === '/' && req.method === 'GET') {
-        // Generate HTML for messages
         let messagesHTML = '';
         if (messages.length > 0) {
             messagesHTML = messages.map(msg => `
@@ -54,26 +52,18 @@ const server = http.createServer((req, res) => {
         res.end(html);
         
     } else if (req.url === '/add-message' && req.method === 'POST') {
-        // We need to collect the form data
         let body = '';
         
-        // Data comes in chunks - THIS WAS MISSING!
         req.on('data', chunk => {
-            body += chunk.toString(); // Convert buffer to string
+            body += chunk.toString();
         });
-        
-        // When all data is received
         req.on('end', () => {
             console.log('Form data received:', body);
-            
-            // Parse the data (it comes as: name=John&message=Hello)
             const params = new URLSearchParams(body);
             const name = params.get('name') || 'Anonymous';
             const message = params.get('message');
             
             console.log(`Message from ${name}: ${message}`);
-            
-            // Store the message
             messages.unshift({
                 name: name,
                 message: message,
@@ -81,13 +71,10 @@ const server = http.createServer((req, res) => {
             });
             
             console.log(`Total messages: ${messages.length}`);
-            
-            // Redirect back to home page
             res.writeHead(302, { 'Location': '/' });
             res.end();
         });
     } else {
-        // 404 for other pages
         res.writeHead(404, { 'Content-Type': 'text/html' });
         res.end('<h1>404 - Page Not Found</h1>');
     }
