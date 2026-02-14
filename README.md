@@ -70,5 +70,3 @@ Add the latest UI captures to `docs/screenshots/` and keep them referenced below
 
 ![Form View](docs/screenshots/Guestbook.png)
 ![Guestbook View](docs/screenshots/Guestbook-view.png)
-
-Updating those files after visual changes keeps the README accurate.
