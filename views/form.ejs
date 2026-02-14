@@ -1,20 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign the Guestbook</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
 <body>
-    <h1>Guestbook</h1>
-    
-    <form action="/" method="POST">
-        <input type="text" name="name" required>
-        <textarea name="message" required></textarea>
-        <button type="submit">Submit</button>
-    </form>
+    <main class="container">
+        <article>
+            <header>
+                <nav>
+                    <ul>
+                        <li><strong>Guestbook App</strong></li>
+                    </ul>
+                    <ul>
+                        <li><a href="/guestbook" role="button" class="secondary">View Entries →</a></li>
+                    </ul>
+                </nav>
+            </header>
 
-    <h2>Entries:</h2>
-    <% entries.forEach(entry => { %>
-        <div>
-            <strong><%= entry.name %></strong>
-            <p><%= entry.message %></p>
-        </div>
-    <% }) %>
+            <div class="grid">
+                <div>
+                    <h1>✍️ Leave your mark.</h1>
+                    <p>Join the community and sign our permanent ledger.</p>
+                </div>
+                
+                <form action="/" method="POST">
+                    <label for="name">
+                        Name / Alias
+                        <input type="text" id="name" name="name" placeholder="E.g. Elon Musk" required>
+                    </label>
+
+                    <label for="message">
+                        Message
+                        <textarea id="message" name="message" rows="4" placeholder="Write something meaningful..." required></textarea>
+                    </label>
+
+                    <button type="submit" class="contrast">Sign Guestbook</button>
+                </form>
+            </div>
+        </article>
+    </main>
 </body>
 </html>
