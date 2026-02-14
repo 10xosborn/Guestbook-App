@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Entries</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+    <main class="container">
+        
+        <nav>
+            <ul>
+                <li><strong>Guestbook Entries</strong></li>
+            </ul>
+            <ul>
+                <li><a href="/" role="button" class="outline">← Sign the Book</a></li>
+            </ul>
+        </nav>
+
+        <hr />
+
+        <% if (entries.length === 0) { %>
+            <article>
+                <p style="text-align: center; opacity: 0.5;">No entries yet. Be the first!</p>
+            </article>
+        <% } else { %>
+            <div>
+                <% entries.forEach(entry => { %>
+                    <article>
+                        <header>
+                            <b><%= entry.name %></b>
+                            <small style="float: right; opacity: 0.6;">
+                                <%= entry.timestamp ? new Date(entry.timestamp).toLocaleDateString() : 'Just now' %>
+                            </small>
+                        </header>
+                        <%= entry.message %>
+                    </article>
+                <% }) %>
+            </div>
+        <% } %>
+
+    </main>
+</body>
+</html>
